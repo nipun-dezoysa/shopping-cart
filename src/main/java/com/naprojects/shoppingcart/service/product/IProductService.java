@@ -1,5 +1,6 @@
 package com.naprojects.shoppingcart.service.product;
 
+import com.naprojects.shoppingcart.dto.ProductDto;
 import com.naprojects.shoppingcart.model.Product;
 import com.naprojects.shoppingcart.request.AddProductRequest;
 import com.naprojects.shoppingcart.request.ProductUpdateRequest;
@@ -18,4 +19,8 @@ public interface IProductService {
     List<Product> getProductByName(String name);
     List<Product> getProductsByBrandAndName(String category, String name);
     Long countProductsByBrandAndName(String brand, String name);
+
+    ProductDto convertToDto(Product product);
+
+    List<ProductDto> getConvertedProducts(List<Product> products);
 }

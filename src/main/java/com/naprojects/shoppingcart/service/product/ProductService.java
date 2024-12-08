@@ -1,13 +1,18 @@
 package com.naprojects.shoppingcart.service.product;
 
+import com.naprojects.shoppingcart.dto.ImageDto;
+import com.naprojects.shoppingcart.dto.ProductDto;
 import com.naprojects.shoppingcart.exceptions.ProductNotFoundException;
 import com.naprojects.shoppingcart.model.Category;
+import com.naprojects.shoppingcart.model.Image;
 import com.naprojects.shoppingcart.model.Product;
 import com.naprojects.shoppingcart.repository.CategoryRepository;
+import com.naprojects.shoppingcart.repository.ImageRepository;
 import com.naprojects.shoppingcart.repository.ProductRepository;
 import com.naprojects.shoppingcart.request.AddProductRequest;
 import com.naprojects.shoppingcart.request.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +24,8 @@ public class ProductService implements IProductService{
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
+    private final ImageRepository imageRepository;
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -108,5 +115,21 @@ public class ProductService implements IProductService{
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand,name);
+    }
+
+    @Override
+    public ProductDto convertToDto(Product product) {
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<Image> images = imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos = images.stream()
+                .map(image -> modelMapper.map(image, ImageDto.class))
+                .toList();
+        productDto.setImages(imageDtos);
+        return productDto;
+    }
+
+    @Override
+    public List<ProductDto> getConvertedProducts(List<Product> products) {
+        return products.stream().map(this::convertToDto).toList();
     }
 }
