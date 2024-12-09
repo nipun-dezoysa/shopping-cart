@@ -1,5 +1,6 @@
 package com.naprojects.shoppingcart.service.user;
 
+import com.naprojects.shoppingcart.dto.UserDto;
 import com.naprojects.shoppingcart.exceptions.AlreadyExistsException;
 import com.naprojects.shoppingcart.exceptions.ResourceNotFoundException;
 import com.naprojects.shoppingcart.model.User;
@@ -7,6 +8,7 @@ import com.naprojects.shoppingcart.repository.UserRepository;
 import com.naprojects.shoppingcart.request.CreateUserRequest;
 import com.naprojects.shoppingcart.request.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService implements IUserService{
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public User getUserById(Long userId) {
@@ -50,5 +53,10 @@ public class UserService implements IUserService{
         userRepository.findById(userId).ifPresentOrElse(userRepository :: delete, () ->{
             throw new ResourceNotFoundException("User not found!");
         });
+    }
+
+    @Override
+    public UserDto convertUserToDto(User user) {
+        return modelMapper.map(user, UserDto.class);
     }
 }
