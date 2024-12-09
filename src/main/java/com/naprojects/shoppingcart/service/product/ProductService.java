@@ -2,6 +2,7 @@ package com.naprojects.shoppingcart.service.product;
 
 import com.naprojects.shoppingcart.dto.ImageDto;
 import com.naprojects.shoppingcart.dto.ProductDto;
+import com.naprojects.shoppingcart.exceptions.AlreadyExistsException;
 import com.naprojects.shoppingcart.exceptions.ProductNotFoundException;
 import com.naprojects.shoppingcart.model.Category;
 import com.naprojects.shoppingcart.model.Image;
@@ -29,6 +30,9 @@ public class ProductService implements IProductService{
 
     @Override
     public Product addProduct(AddProductRequest request) {
+        if(productExists(request.getName(), request.getBrand())){
+            throw new AlreadyExistsException(request.getBrand()+" "+request.getName()+" already in db!");
+        }
         //save category if not exists
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(()->{
@@ -38,6 +42,10 @@ public class ProductService implements IProductService{
 
         //save product
         return productRepository.save(createProduct(request,category));
+    }
+
+    private boolean productExists(String name, String brand){
+        return productRepository.existsByNameAndBrand(name,brand);
     }
 
     private Product createProduct(AddProductRequest request, Category category){

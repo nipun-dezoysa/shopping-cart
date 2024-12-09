@@ -1,6 +1,7 @@
 package com.naprojects.shoppingcart.controller;
 
 import com.naprojects.shoppingcart.dto.ProductDto;
+import com.naprojects.shoppingcart.exceptions.AlreadyExistsException;
 import com.naprojects.shoppingcart.exceptions.ResourceNotFoundException;
 import com.naprojects.shoppingcart.model.Product;
 import com.naprojects.shoppingcart.request.AddProductRequest;
@@ -46,8 +47,8 @@ public class ProductController {
             Product addedProduct = productService.addProduct(product);
             ProductDto productDto = productService.convertToDto(addedProduct);
             return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
