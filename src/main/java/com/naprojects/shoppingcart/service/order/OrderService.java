@@ -79,7 +79,8 @@ public class OrderService implements IOrderService{
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
     }
 
-    private OrderDto convertToDto(Order order) {
+    @Override
+    public OrderDto convertToDto(Order order) {
         return modelMapper.map(order, OrderDto.class);
     }
 
